@@ -14,7 +14,9 @@ package-lock.json
 
 # misc
 /.vscode
-.DS_Store
+#ignoring this everywhere
+**/.DS_Store
+config.env
 .env.local
 .env.development.local
 .env.test.local
