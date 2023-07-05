@@ -17,6 +17,7 @@ package-lock.json
 #ignoring this everywhere
 **/.DS_Store
 
+#Remove this below line for production
 config.env
 .env.local
 .env.development.local
