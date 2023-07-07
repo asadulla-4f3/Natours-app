@@ -2,8 +2,12 @@ const express = require('express');
 const { protect, restrictTo } = require('../controllers/authController');
 const {
   getAllReviews,
-  writeReview,
+  createReview,
+  deleteReview,
+  updateReview,
+  getReview,
 } = require('../controllers/reviewController');
+const { setTourUserIds } = require('../controllers/tourController');
 
 const router = express.Router({ mergeParams: true });
 // mergeParams enabled because we need to use other routes params as well as per the nested routes
@@ -18,6 +22,8 @@ const router = express.Router({ mergeParams: true });
 router
   .route('/')
   .get(getAllReviews)
-  .post(protect, restrictTo('user'), writeReview);
+  .post(protect, restrictTo('user'), setTourUserIds, createReview);
+
+router.route('/:id').get(getReview).patch(updateReview).delete(deleteReview);
 
 module.exports = router;

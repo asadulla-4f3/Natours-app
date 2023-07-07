@@ -10,7 +10,7 @@ const {
   getMonthlyPlan,
 } = require('../controllers/tourController');
 const { protect, restrictTo } = require('../controllers/authController');
-// const { writeReview } = require('../controllers/reviewController');
+// const { createReview } = require('../controllers/reviewController');
 const reviewRouter = require('./reviewRoutes');
 
 const router = express.Router();
@@ -46,6 +46,6 @@ router
 // Get /tour/123456/reviews/098765
 
 // removing this below line and used the express use for nested route. Please check above code which takes you to reviewRouter
-// router.route('/:tourId/reviews').post(protect, restrictTo('user'), writeReview);
+// router.route('/:tourId/reviews').post(protect, restrictTo('user'), createReview);
 
 module.exports = router;
