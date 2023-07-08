@@ -37,6 +37,7 @@ const tourSchema = new mongoose.Schema(
       default: 4.5,
       min: [1, 'Rating must be above 1.0'],
       max: [6, 'Rating must be below 6.0'],
+      set: (val) => Math.round(val * 10) / 10, // eg: 4.6666 rounded to 4.7
     },
     ratingsQuantity: {
       type: Number,
@@ -121,6 +122,11 @@ const tourSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+
+// This is related to index on query
+// tourSchema.index({ price: 1 });
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
 
 tourSchema.virtual('durationWeeks').get(function () {
   // use function as this only because getter method uses 'this'
