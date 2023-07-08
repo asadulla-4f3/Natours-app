@@ -30,14 +30,19 @@ router.route('/top-5-cheap-tours').get(aliasTop5Tours, getAllTours);
 
 router.route('/tour-stats').get(getTourStats);
 
-router.route('/monthly-plan/:year').get(getMonthlyPlan);
+router
+  .route('/monthly-plan/:year')
+  .get(protect, restrictTo('admin', 'lead-guide', 'guide'), getMonthlyPlan);
 
-router.route('/').get(protect, getAllTours).post(createTour);
+router
+  .route('/')
+  .get(getAllTours)
+  .post(protect, restrictTo('admin', 'lead-guide'), createTour);
 
 router
   .route('/:id')
   .get(getATour)
-  .patch(updateATour)
+  .patch(protect, restrictTo('admin', 'lead-guide'), updateATour)
   .delete(protect, restrictTo('admin', 'lead-guide'), deleteATour);
 
 // Nested Routes
