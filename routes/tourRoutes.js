@@ -8,6 +8,8 @@ const {
   aliasTop5Tours,
   getTourStats,
   getMonthlyPlan,
+  getToursWithin,
+  getDistances,
 } = require('../controllers/tourController');
 const { protect, restrictTo } = require('../controllers/authController');
 // const { createReview } = require('../controllers/reviewController');
@@ -33,6 +35,14 @@ router.route('/tour-stats').get(getTourStats);
 router
   .route('/monthly-plan/:year')
   .get(protect, restrictTo('admin', 'lead-guide', 'guide'), getMonthlyPlan);
+
+// Geo-spatial routes - tours within certain distance from the center of your location
+// lat=34.006072, long=-118.803461
+router
+  .route('/tours-within/:distance/center/:latlng/unit/:unit')
+  .get(getToursWithin);
+
+router.route('/distances/:latlng/unit/:unit').get(getDistances);
 
 router
   .route('/')
