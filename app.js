@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -18,10 +19,19 @@ const globalErrorHandler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
+const viewRouter = require('./routes/viewRoutes');
 
 const app = express();
 
+// Sets view engine as pug
+app.set('view engine', 'pug');
+
+// Sets static view files path
+app.set('views', path.join(__dirname, 'views'));
+
 // 1. Global middlewares
+// Serving static files
+app.use(express.static(path.join(__dirname, 'public')));
 
 // set security http headers
 app.use(helmet());
@@ -63,9 +73,6 @@ app.use(
   })
 );
 
-// Serving static files
-app.use(express.static(`${__dirname}/public`));
-
 // creating our own middleware
 /*
 app.use((req, res, next) => {
@@ -86,6 +93,7 @@ app.use((req, res, next) => {
 // app.delete('/api/v1/tours/:id', deleteATour);
 
 // 3. Routes
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
