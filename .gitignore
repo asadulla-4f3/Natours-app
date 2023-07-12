@@ -14,6 +14,7 @@ package-lock.json
 
 # misc
 /.vscode
+/.cache
 #ignoring this everywhere
 **/.DS_Store
 
