@@ -6,7 +6,6 @@ const handleCastErrorDB = (err) => {
 };
 
 const handleDuplicateFieldsDB = (err) => {
-  //   console.log('\n--->>', err.errmsg, '<---err.errmsg\n');
   //   const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
   const value = err.keyValue.name;
   const message = `Duplicate field value: ${value}. Please use a different value`;
@@ -48,7 +47,6 @@ const sendErrorDev = (err, req, res) => {
 
 const sendErrorProd = (err, req, res) => {
   // API
-  console.log(req.originalUrl.startsWith('/api'), '<---req.originalUrl');
   if (req.originalUrl.startsWith('/api')) {
     // Operational, trusted error: send message to client
     if (err.isOperational) {
@@ -82,15 +80,10 @@ const sendErrorProd = (err, req, res) => {
 };
 
 module.exports = (err, req, res, next) => {
-  //   console.log(err.stack, '\n');
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
 
-  console.log(process.env.NODE_ENV, '\n');
-
   if (process.env.NODE_ENV === 'development') {
-    console.log(err, '<---err object before sendErrorDev');
-    // console.log('\n--->>', err.errmsg, '<---err.errmsg\n');
     sendErrorDev(err, req, res);
   } else if (process.env.NODE_ENV === 'production') {
     let error;
@@ -109,7 +102,6 @@ module.exports = (err, req, res, next) => {
       error = { message: err.message, ...err };
       //   error = Object.assign(err); // This is not the same as above line
     }
-    console.log(error, '<---error object before sendErrorProd');
     sendErrorProd(error, req, res);
   }
 };

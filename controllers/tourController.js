@@ -21,14 +21,12 @@ const factory = require('./handlerFactory');
 
 // multiple middleware functions
 // exports.checkBody = (req, res, next) => {
-//   console.log(req.body);
 //   if (!req.body.name || !req.body.price) {
 //     return res.status(400).json({
 //       status: 'fail',
 //       message: 'name or price is missing',
 //     });
 //   }
-//   console.log('request includes name and price');
 //   next();
 // };
 
@@ -83,8 +81,6 @@ exports.aliasTop5Tours = (req, res, next) => {
 //   // let queryStr = JSON.stringify(queryObj);
 //   // queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
 
-//   // console.log(JSON.parse(queryStr));
-
 //   // let query = Tour.find(JSON.parse(queryStr));
 
 //   /* // Static changes
@@ -96,10 +92,8 @@ exports.aliasTop5Tours = (req, res, next) => {
 //       */
 
 //   // 2) Sorting
-//   // console.log(req.query.sort);
 //   // if (req.query.sort) {
 //   //   const sortBy = req.query.sort.split(',').join(' ');
-//   //   // console.log(sortBy);
 //   //   query = query.sort(sortBy);
 //   // } else {
 //   //   query = query.sort('-createdAt');
@@ -108,7 +102,6 @@ exports.aliasTop5Tours = (req, res, next) => {
 //   // 3)FIELD LIMITING
 //   // if (req.query.fields) {
 //   //   const fields = req.query.fields.split(',').join(' ');
-//   //   console.log(fields);
 //   //   query = query.select(fields);
 //   // } else {
 //   //   query = query.select('-__v');
@@ -365,7 +358,6 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
   const [lat, lng] = latlng.split(',');
   // radius calculation based on Earth's radius
   const radius = unit === 'mi' ? distance / 3963.3 : distance / 6378.1;
-  console.log(radius, '<--radius calculated');
 
   if (!lat || !lng) {
     next(
