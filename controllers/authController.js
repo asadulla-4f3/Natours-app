@@ -1,8 +1,7 @@
+/* eslint-disable import/no-extraneous-dependencies */
 const crypto = require('crypto');
 const { promisify } = require('util');
-// eslint-disable-next-line import/no-extraneous-dependencies
 const jwt = require('jsonwebtoken');
-// eslint-disable-next-line import/no-extraneous-dependencies
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');

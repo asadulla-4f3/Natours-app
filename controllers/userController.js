@@ -1,6 +1,5 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+/* eslint-disable import/no-extraneous-dependencies */
 const multer = require('multer');
-// eslint-disable-next-line import/no-extraneous-dependencies
 const sharp = require('sharp');
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');

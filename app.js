@@ -1,17 +1,12 @@
+/* eslint-disable import/no-extraneous-dependencies */
 const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
-// eslint-disable-next-line import/no-extraneous-dependencies
 const rateLimit = require('express-rate-limit');
-// eslint-disable-next-line import/no-extraneous-dependencies
 const helmet = require('helmet');
-// eslint-disable-next-line import/no-extraneous-dependencies
 const mongoSanitize = require('express-mongo-sanitize');
-// eslint-disable-next-line import/no-extraneous-dependencies
 const xss = require('xss-clean');
-// eslint-disable-next-line import/no-extraneous-dependencies
 const hpp = require('hpp');
-// eslint-disable-next-line import/no-extraneous-dependencies
 const cookieParser = require('cookie-parser');
 
 const AppError = require('./utils/appError');
