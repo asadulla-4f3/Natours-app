@@ -1,15 +1,14 @@
+/* eslint-disable import/no-extraneous-dependencies */
+const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
-// eslint-disable-next-line import/no-extraneous-dependencies
 const rateLimit = require('express-rate-limit');
-// eslint-disable-next-line import/no-extraneous-dependencies
 const helmet = require('helmet');
-// eslint-disable-next-line import/no-extraneous-dependencies
 const mongoSanitize = require('express-mongo-sanitize');
-// eslint-disable-next-line import/no-extraneous-dependencies
 const xss = require('xss-clean');
-// eslint-disable-next-line import/no-extraneous-dependencies
 const hpp = require('hpp');
+const cookieParser = require('cookie-parser');
+const compression = require('compression');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -18,10 +17,19 @@ const globalErrorHandler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
+const viewRouter = require('./routes/viewRoutes');
 
 const app = express();
 
+// Sets view engine as pug
+app.set('view engine', 'pug');
+
+// Sets static view files path
+app.set('views', path.join(__dirname, 'views'));
+
 // 1. Global middlewares
+// Serving static files
+app.use(express.static(path.join(__dirname, 'public')));
 
 // set security http headers
 app.use(helmet());
@@ -42,6 +50,8 @@ app.use('/api', limiter);
 
 // Body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' })); // middleware
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(cookieParser());
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
@@ -63,19 +73,19 @@ app.use(
   })
 );
 
-// Serving static files
-app.use(express.static(`${__dirname}/public`));
-
 // creating our own middleware
 /*
 app.use((req, res, next) => {
-  console.log('Hello from the middleware 👋');
   next();
 });
 */
+
+app.use(compression());
+
 // Test middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
+  // console.log(req.cookies);
   next();
 });
 
@@ -86,6 +96,7 @@ app.use((req, res, next) => {
 // app.delete('/api/v1/tours/:id', deleteATour);
 
 // 3. Routes
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);

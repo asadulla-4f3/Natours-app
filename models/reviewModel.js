@@ -2,6 +2,7 @@
 
 const { default: mongoose } = require('mongoose');
 const { default: slugify } = require('slugify');
+const Tour = require('./tourModel');
 
 const reviewSchema = new mongoose.Schema(
   {
@@ -36,6 +37,9 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
+// Eradicate duplicate reviews (means each user could provide only one review for a tour)
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
+
 reviewSchema.pre('save', function (next) {
   this.slug = slugify(this.review, { lower: true });
   next();
@@ -55,6 +59,50 @@ reviewSchema.pre(/^find/, function (next) {
   });
 
   next();
+});
+
+reviewSchema.statics.calcAverageRatings = async function (tourId) {
+  // this keyword will point to current review
+  const stats = await this.aggregate([
+    {
+      $match: { tour: tourId },
+    },
+    {
+      $group: {
+        _id: '$tour',
+        nRationg: { $sum: 1 },
+        avgRating: { $avg: '$rating' },
+      },
+    },
+  ]);
+  // console.log(stats, '<----stats');
+
+  if (stats.length > 0) {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: stats[0].nRationg,
+      ratingsAverage: stats[0].avgRating,
+    });
+  } else {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: 0,
+      ratingsAverage: 4.5,
+    });
+  }
+};
+
+reviewSchema.post('save', function () {
+  // this points to current review
+  // this.constructor points to the current review model
+  this.constructor.calcAverageRatings(this.tour);
+});
+
+// update the AverageRating and Quantity if the Reviews got updated or deleted
+// findByIdAndUpdate
+// findByIdAndDelete
+
+reviewSchema.post(/^findOneAnd/, async (doc) => {
+  // This will execute the method from the current doc instance
+  if (doc) await doc.constructor.calcAverageRatings(doc.tour);
 });
 
 const Review = mongoose.model('Review', reviewSchema);

@@ -1,8 +1,9 @@
 // eslint-disable-next-line no-unused-vars
 const Tour = require('../models/tourModel');
-const APIFeatures = require('../utils/apiFeatures');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
+
+const factory = require('./handlerFactory');
 // const tours = JSON.parse(
 //   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
 // );
@@ -20,14 +21,12 @@ const catchAsync = require('../utils/catchAsync');
 
 // multiple middleware functions
 // exports.checkBody = (req, res, next) => {
-//   console.log(req.body);
 //   if (!req.body.name || !req.body.price) {
 //     return res.status(400).json({
 //       status: 'fail',
 //       message: 'name or price is missing',
 //     });
 //   }
-//   console.log('request includes name and price');
 //   next();
 // };
 
@@ -41,114 +40,109 @@ exports.aliasTop5Tours = (req, res, next) => {
 
 // Refactoring the API features
 
-exports.createTour = catchAsync(async (req, res) => {
-  // const newTour = new Tour({})
-  // newTour.save();
+// exports.createTour = catchAsync(async (req, res) => {
+//   // const newTour = new Tour({})
+//   // newTour.save();
 
-  // try {
-  //   const newTour = await Tour.create(req.body);
+//   // try {
+//   //   const newTour = await Tour.create(req.body);
 
-  //   res.status(201).json({
-  //     status: 'success',
-  //     data: {
-  //       tour: newTour,
-  //     },
-  //   });
-  // } catch (err) {
-  //   res.status(400).json({
-  //     status: 'fail',
-  //     message: `Invalid data sent! - Err: ${err}`,
-  //   });
-  // }
-  const newTour = await Tour.create(req.body);
+//   //   res.status(201).json({
+//   //     status: 'success',
+//   //     data: {
+//   //       tour: newTour,
+//   //     },
+//   //   });
+//   // } catch (err) {
+//   //   res.status(400).json({
+//   //     status: 'fail',
+//   //     message: `Invalid data sent! - Err: ${err}`,
+//   //   });
+//   // }
+//   const newTour = await Tour.create(req.body);
 
-  res.status(201).json({
-    status: 'success',
-    data: {
-      tour: newTour,
-    },
-  });
-});
+//   res.status(201).json({
+//     status: 'success',
+//     data: {
+//       tour: newTour,
+//     },
+//   });
+// });
 
-exports.getAllTours = catchAsync(async (req, res) => {
-  // try {
-  // BUILD QUERY
-  // 1A) FILTERING
-  // const queryObj = { ...req.query };
-  // const excludedFields = ['page', 'sort', 'limit', 'fields'];
-  // excludedFields.forEach((el) => delete queryObj[el]);
+// exports.getAllTours = catchAsync(async (req, res) => {
+//   // try {
+//   // BUILD QUERY
+//   // 1A) FILTERING
+//   // const queryObj = { ...req.query };
+//   // const excludedFields = ['page', 'sort', 'limit', 'fields'];
+//   // excludedFields.forEach((el) => delete queryObj[el]);
 
-  // 1B) ADVANCED FILTERING
-  // let queryStr = JSON.stringify(queryObj);
-  // queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+//   // 1B) ADVANCED FILTERING
+//   // let queryStr = JSON.stringify(queryObj);
+//   // queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
 
-  // console.log(JSON.parse(queryStr));
+//   // let query = Tour.find(JSON.parse(queryStr));
 
-  // let query = Tour.find(JSON.parse(queryStr));
+//   /* // Static changes
+//     const tours = await Tour.find()
+//       .where('duration')
+//       .equals(5)
+//       .where('difficulty')
+//       .equals('easy');
+//       */
 
-  /* // Static changes
-    const tours = await Tour.find()
-      .where('duration')
-      .equals(5)
-      .where('difficulty')
-      .equals('easy');
-      */
+//   // 2) Sorting
+//   // if (req.query.sort) {
+//   //   const sortBy = req.query.sort.split(',').join(' ');
+//   //   query = query.sort(sortBy);
+//   // } else {
+//   //   query = query.sort('-createdAt');
+//   // }
 
-  // 2) Sorting
-  // console.log(req.query.sort);
-  // if (req.query.sort) {
-  //   const sortBy = req.query.sort.split(',').join(' ');
-  //   // console.log(sortBy);
-  //   query = query.sort(sortBy);
-  // } else {
-  //   query = query.sort('-createdAt');
-  // }
+//   // 3)FIELD LIMITING
+//   // if (req.query.fields) {
+//   //   const fields = req.query.fields.split(',').join(' ');
+//   //   query = query.select(fields);
+//   // } else {
+//   //   query = query.select('-__v');
+//   // }
 
-  // 3)FIELD LIMITING
-  // if (req.query.fields) {
-  //   const fields = req.query.fields.split(',').join(' ');
-  //   console.log(fields);
-  //   query = query.select(fields);
-  // } else {
-  //   query = query.select('-__v');
-  // }
+//   // 4) Pagination
+//   // const page = req.query.page * 1 || 1;
+//   // const limit = req.query.limit * 1 || 100;
+//   // const skip = (page - 1) * limit;
+//   // query = query.skip(skip).limit(limit);
 
-  // 4) Pagination
-  // const page = req.query.page * 1 || 1;
-  // const limit = req.query.limit * 1 || 100;
-  // const skip = (page - 1) * limit;
-  // query = query.skip(skip).limit(limit);
+//   // if (req.query.page) {
+//   //   const numTours = await Tour.countDocuments();
+//   //   if (skip >= numTours) {
+//   //     throw new Error(
+//   //       'This page does not exist or page number is higher than available count'
+//   //     );
+//   //   }
+//   // }
 
-  // if (req.query.page) {
-  //   const numTours = await Tour.countDocuments();
-  //   if (skip >= numTours) {
-  //     throw new Error(
-  //       'This page does not exist or page number is higher than available count'
-  //     );
-  //   }
-  // }
+//   // EXECUTE QUERY
+//   const features = new APIFeatures(Tour.find(), req.query)
+//     .filter()
+//     .sort()
+//     .limitFields()
+//     .paginate();
+//   const tours = await features.query;
 
-  // EXECUTE QUERY
-  const features = new APIFeatures(Tour.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate();
-  const tours = await features.query;
-
-  // SEND RESPONSE
-  res.status(200).json({
-    status: 'success',
-    results: tours.length,
-    data: { tours: tours },
-  });
-  // } catch (err) {
-  //   res.status(404).json({
-  //     status: 'fail',
-  //     message: err,
-  //   });
-  // }
-});
+//   // SEND RESPONSE
+//   res.status(200).json({
+//     status: 'success',
+//     results: tours.length,
+//     data: { tours: tours },
+//   });
+//   // } catch (err) {
+//   //   res.status(404).json({
+//   //     status: 'fail',
+//   //     message: err,
+//   //   });
+//   // }
+// });
 
 exports.getATour = catchAsync(async (req, res, next) => {
   // try {
@@ -179,71 +173,89 @@ exports.getATour = catchAsync(async (req, res, next) => {
   // }
 });
 
-exports.updateATour = catchAsync(async (req, res, next) => {
-  // const id = req.params.id * 1;
+// exports.updateATour = catchAsync(async (req, res, next) => {
+//   // const id = req.params.id * 1;
 
-  // const tour = tours.find((el) => el.id === id);
-  //   if (id > tours.length) {
-  // if (!tour) {
-  //   return res.status(404).json({
-  //     status: 'fail',
-  //     message: 'Invalid id',
-  //   });
-  // }
+//   // const tour = tours.find((el) => el.id === id);
+//   //   if (id > tours.length) {
+//   // if (!tour) {
+//   //   return res.status(404).json({
+//   //     status: 'fail',
+//   //     message: 'Invalid id',
+//   //   });
+//   // }
 
-  // try {
-  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+//   // try {
+//   const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+//     new: true,
+//     runValidators: true,
+//   });
 
-  if (!tour) {
-    return next(new AppError('No tour found with that Id', 404));
-  }
+//   if (!tour) {
+//     return next(new AppError('No tour found with that Id', 404));
+//   }
 
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour: tour,
-    },
-  });
-  // } catch (err) {
-  //   res.status(404).json({
-  //     status: 'fail',
-  //     message: err,
-  //   });
-  // }
-});
+//   res.status(200).json({
+//     status: 'success',
+//     data: {
+//       tour: tour,
+//     },
+//   });
+//   // } catch (err) {
+//   //   res.status(404).json({
+//   //     status: 'fail',
+//   //     message: err,
+//   //   });
+//   // }
+// });
 
-exports.deleteATour = catchAsync(async (req, res, next) => {
-  // const id = req.params.id * 1;
+// exports.deleteATour = catchAsync(async (req, res, next) => {
+//   // const id = req.params.id * 1;
 
-  // const tour = tours.find((el) => el.id === id);
-  //   if (id > tours.length) {
-  // if (!tour) {
-  //   return res.status(404).json({
-  //     status: 'fail',
-  //     message: 'Invalid id',
-  //   });
-  // }
+//   // const tour = tours.find((el) => el.id === id);
+//   //   if (id > tours.length) {
+//   // if (!tour) {
+//   //   return res.status(404).json({
+//   //     status: 'fail',
+//   //     message: 'Invalid id',
+//   //   });
+//   // }
 
-  // try {
-  const tour = await Tour.findByIdAndDelete(req.params.id);
-  res.status(204).json({
-    status: 'success',
-    data: null,
-  });
-  if (!tour) {
-    return next(new AppError('No tour found with that Id', 404));
-  }
+//   // try {
+//   const tour = await Tour.findByIdAndDelete(req.params.id);
 
-  // } catch (err) {
-  //   res.status(404).json({
-  //     status: 'fail',
-  //     message: err,
-  //   });
-  // }
-});
+//   if (!tour) {
+//     return next(new AppError('No tour found with that Id', 404));
+//   }
+
+//   res.status(204).json({
+//     status: 'success',
+//     data: null,
+//   });
+//   // } catch (err) {
+//   //   res.status(404).json({
+//   //     status: 'fail',
+//   //     message: err,
+//   //   });
+//   // }
+// });
+
+exports.setTourUserIds = (req, res, next) => {
+  // Allow nested routes
+  if (!req.body.tour) req.body.tour = req.params.tourId;
+  if (!req.body.user) req.body.user = req.user.id;
+  next();
+};
+
+exports.getAllTours = factory.getAll(Tour);
+
+exports.getATour = factory.getOne(Tour, { path: 'reviews' });
+
+exports.createTour = factory.createOne(Tour);
+
+exports.updateATour = factory.updateOne(Tour);
+
+exports.deleteATour = factory.deleteOne(Tour);
 
 exports.getTourStats = catchAsync(async (req, res) => {
   // try {
@@ -336,4 +348,81 @@ exports.getMonthlyPlan = catchAsync(async (req, res) => {
   //     message: err,
   //   });
   // }
+});
+
+// '/tours-within/:distance/center/:latlng/unit/:unit'
+// /tours-within/:225/center/:-40,45/unit/:mi
+
+exports.getToursWithin = catchAsync(async (req, res, next) => {
+  const { distance, latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+  // radius calculation based on Earth's radius
+  const radius = unit === 'mi' ? distance / 3963.3 : distance / 6378.1;
+
+  if (!lat || !lng) {
+    next(
+      new AppError(
+        'Please provide latitude and longitude in the format of lat, lng!',
+        400
+      )
+    );
+  }
+
+  const tours = await Tour.find({
+    startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+  });
+
+  res.status(200).json({
+    status: 'success',
+    results: tours.length,
+    data: {
+      data: tours,
+    },
+  });
+});
+
+// /distances/:latlng/unit/:unit
+
+// Geo-spatial routes - get distances from the current tour to all other tours
+exports.getDistances = catchAsync(async (req, res, next) => {
+  const { latlng, unit } = req.params;
+
+  const [lat, lng] = latlng.split(',');
+
+  const multiplier = unit === 'mi' ? 0.000621371 : 0.001;
+
+  if (!lat || !lng) {
+    next(
+      new AppError(
+        'Please provide latitude and longitude in the format of lat, lng!',
+        400
+      )
+    );
+  }
+
+  const distances = await Tour.aggregate([
+    {
+      $geoNear: {
+        near: {
+          type: 'Point',
+          coordinates: [lng * 1, lat * 1],
+        },
+        distanceField: 'distance',
+        distanceMultiplier: multiplier,
+      },
+    },
+    {
+      $project: {
+        distance: 1,
+        name: 1,
+      },
+    },
+  ]);
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      data: distances,
+    },
+  });
 });
