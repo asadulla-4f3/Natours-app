@@ -10,14 +10,14 @@ const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
 
-const AppError = require('./utils/appError');
-const globalErrorHandler = require('./controllers/errorController');
+const AppError = require('../utils/appError');
+const globalErrorHandler = require('../controllers/errorController');
 
 // 2. Route handlers
-const tourRouter = require('./routes/tourRoutes');
-const userRouter = require('./routes/userRoutes');
-const reviewRouter = require('./routes/reviewRoutes');
-const viewRouter = require('./routes/viewRoutes');
+const tourRouter = require('../routes/tourRoutes');
+const userRouter = require('../routes/userRoutes');
+const reviewRouter = require('../routes/reviewRoutes');
+const viewRouter = require('../routes/viewRoutes');
 
 const app = express();
 
@@ -25,11 +25,11 @@ const app = express();
 app.set('view engine', 'pug');
 
 // Sets static view files path
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, '/../views'));
 
 // 1. Global middlewares
 // Serving static files
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '/../public')));
 
 // set security http headers
 app.use(helmet());
