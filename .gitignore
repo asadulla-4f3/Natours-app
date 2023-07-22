@@ -2,9 +2,6 @@
 
 node_modules
 
-#ignoring package-lock as well
-package-lock.json
-
 # dependencies
 /.pnp
 .pnp.js
