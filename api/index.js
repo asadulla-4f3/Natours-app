@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
+const cors = require('cors');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
@@ -28,6 +29,10 @@ app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, '/../views'));
 
 // 1. Global middlewares
+
+app.use(cors());
+
+app.options('*', cors());
 // Serving static files
 app.use(express.static(path.join(__dirname, '/../public')));
 
